@@ -16,4 +16,14 @@
         app:menu="@menu/bottom_nav_menu"
         />
 
+    <FrameLayout
+        android:id="@+id/hostFragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottomNav"
+        />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
