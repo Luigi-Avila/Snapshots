@@ -3,4 +3,6 @@
     <string name="home_title">Inicio</string>
     <string name="home_add">Crear</string>
     <string name="home_profile">Perfil</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
