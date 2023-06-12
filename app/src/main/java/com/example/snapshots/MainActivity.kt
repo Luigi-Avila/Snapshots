@@ -41,6 +41,36 @@ class MainActivity : AppCompatActivity() {
         mFragmentManager.beginTransaction()
             .add(R.id.hostFragment, homeFragment, HomeFragment::class.java.name)
             .commit()
+
+        mBinding.bottomNav.setOnItemSelectedListener {
+            when (it.itemId) {
+                R.id.action_home -> {
+                    mFragmentManager.beginTransaction()
+                        .hide(mActiveFragment)
+                        .show(homeFragment)
+                        .commit()
+                    mActiveFragment = homeFragment
+                    true
+                }
+                R.id.action_add -> {
+                    mFragmentManager.beginTransaction()
+                        .hide(mActiveFragment)
+                        .show(addFragment)
+                        .commit()
+                    mActiveFragment = addFragment
+                    true
+                }
+                R.id.action_profile -> {
+                    mFragmentManager.beginTransaction()
+                        .hide(mActiveFragment)
+                        .show(profileFragment)
+                        .commit()
+                    mActiveFragment = profileFragment
+                    true
+                }
+                else -> false
+            }
+        }
     }
 
 
