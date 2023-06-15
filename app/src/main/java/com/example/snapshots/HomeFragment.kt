@@ -6,6 +6,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -13,6 +15,7 @@ import com.example.snapshots.databinding.FragmentHomeBinding
 import com.example.snapshots.databinding.ItemSnapshotBinding
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 
 class HomeFragment : Fragment() {
@@ -62,6 +65,17 @@ class HomeFragment : Fragment() {
                         .into(binding.imgPhoto)
                 }
             }
+
+            override fun onDataChanged() {
+                super.onDataChanged()
+                mBinding.progressBar.visibility = View.GONE
+            }
+
+            override fun onError(error: DatabaseError) {
+                super.onError(error)
+                Toast.makeText(mContext, error.message, Toast.LENGTH_SHORT).show()
+            }
+
         }
     }
 
