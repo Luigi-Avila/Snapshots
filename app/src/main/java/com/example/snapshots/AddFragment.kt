@@ -71,6 +71,7 @@ class AddFragment : Fragment() {
 
     private fun postSnapshot() {
         mBinding.progressBar.visibility = View.VISIBLE
+        val key = mDatabaseReference.push().key
         val storageReference = mStorageReference.child(PATH_SNAPSHOT).child("my_photo")
         storageReference.putFile(mPhotoSelectedUri)
             .addOnProgressListener {
@@ -82,7 +83,15 @@ class AddFragment : Fragment() {
                 mBinding.progressBar.visibility = View.INVISIBLE
             }
             .addOnSuccessListener {
-                Snackbar.make(mBinding.root, "Foto publicada", Snackbar.LENGTH_SHORT).show()
+                Snackbar
+                    .make(mBinding.root, "Foto publicada", Snackbar.LENGTH_SHORT)
+                    .show()
+                it.storage.downloadUrl.addOnSuccessListener {url ->
+                    savePost(key!!, url.toString(), mBinding.etTitle.text.toString().trim())
+                    mBinding.tilTitle.visibility = View.GONE
+                    mBinding.tvMessage.text = getString(R.string.post_message_title)
+                }
+
             }
             .addOnFailureListener {
                 Snackbar.make(
@@ -91,6 +100,11 @@ class AddFragment : Fragment() {
                     Snackbar.LENGTH_SHORT
                 ).show()
             }
+    }
+
+    private fun savePost(key: String, url: String, title: String) {
+        val snapshot = Snapshot(title = title, photoUrl = url)
+        mDatabaseReference.child(key).setValue(snapshot)
     }
 
 }
