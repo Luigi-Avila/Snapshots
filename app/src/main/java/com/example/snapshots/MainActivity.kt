@@ -1,10 +1,17 @@
 package com.example.snapshots
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.snapshots.databinding.ActivityMainBinding
+import com.firebase.ui.auth.AuthUI
+import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
+import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 class MainActivity : AppCompatActivity() {
 
@@ -12,11 +19,73 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var mActiveFragment: Fragment
     private lateinit var mFragmentManager: FragmentManager
+
+    /*    private lateinit var mAuthListener: FirebaseAuth.AuthStateListener
+        private var mFirebaseAuth: FirebaseAuth? = null*/
+
+    private val sigInLauncher = registerForActivityResult(
+        FirebaseAuthUIActivityResultContract(),
+    ) { res ->
+        this.onSignInResult(res)
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(mBinding.root)
+
+        setupAuth()
         setupBottomNavigation()
+    }
+
+    private fun setupAuth() {
+        val user = Firebase.auth.currentUser
+        if (user == null) {
+            val providers = arrayListOf(
+                AuthUI.IdpConfig.EmailBuilder().build(),
+                AuthUI.IdpConfig.GoogleBuilder().build()
+            )
+
+            val sigInIntent = AuthUI.getInstance()
+                .createSignInIntentBuilder()
+                .setAvailableProviders(providers)
+                .build()
+            sigInLauncher.launch(sigInIntent)
+        } else {
+            Toast.makeText(this, "Usuario loggeado", Toast.LENGTH_LONG).show()
+        }
+
+
+        /*mFirebaseAuth = FirebaseAuth.getInstance()
+        mAuthListener = FirebaseAuth.AuthStateListener {
+            val user = it.currentUser
+            if (user == null) {
+
+            } else {
+            }
+        }*/
+
+    }
+
+    private fun onSignInResult(result: FirebaseAuthUIAuthenticationResult) {
+        val response = result.idpResponse
+        if (result.resultCode == RESULT_OK) {
+            // Successfully signed in
+            val user = FirebaseAuth.getInstance().currentUser
+            Toast.makeText(this, "Bienvenido...", Toast.LENGTH_LONG).show()
+            // ...
+        } else {
+            if (response == null) {
+                Toast.makeText(
+                    this,
+                    "No puedes continuar sin logearte",
+                    Toast.LENGTH_LONG
+                ).show()
+                finish()
+            }
+
+        }
     }
 
     private fun setupBottomNavigation() {
@@ -52,6 +121,7 @@ class MainActivity : AppCompatActivity() {
                     mActiveFragment = homeFragment
                     true
                 }
+
                 R.id.action_add -> {
                     mFragmentManager.beginTransaction()
                         .hide(mActiveFragment)
@@ -60,6 +130,7 @@ class MainActivity : AppCompatActivity() {
                     mActiveFragment = addFragment
                     true
                 }
+
                 R.id.action_profile -> {
                     mFragmentManager.beginTransaction()
                         .hide(mActiveFragment)
@@ -68,6 +139,7 @@ class MainActivity : AppCompatActivity() {
                     mActiveFragment = profileFragment
                     true
                 }
+
                 else -> false
             }
         }
