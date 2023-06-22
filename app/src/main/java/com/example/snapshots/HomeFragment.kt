@@ -21,7 +21,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), HomeAux {
 
     private lateinit var mBinding: FragmentHomeBinding
 
@@ -141,4 +141,7 @@ class HomeFragment : Fragment() {
         }
     }
 
+    override fun goToTop() {
+        mBinding.recyclerView.smoothScrollToPosition(0)
+    }
 }

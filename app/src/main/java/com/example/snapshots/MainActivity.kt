@@ -1,5 +1,6 @@
 package com.example.snapshots
 
+import android.net.wifi.hotspot2.pps.HomeSp
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -163,6 +164,12 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 else -> false
+            }
+        }
+
+        mBinding.bottomNav.setOnItemReselectedListener {
+            when(it.itemId){
+                R.id.action_home -> (homeFragment as HomeAux).goToTop()
             }
         }
     }

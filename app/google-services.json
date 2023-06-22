@@ -1,20 +1,29 @@
 {
   "project_info": {
     "project_number": "813109373136",
+    "firebase_url": "https://snapshots-84fbb-default-rtdb.firebaseio.com",
     "project_id": "snapshots-84fbb",
     "storage_bucket": "snapshots-84fbb.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:813109373136:android:5472d82796742ad45616d5",
+        "mobilesdk_app_id": "1:813109373136:android:901ce8881e6bd1cf5616d5",
         "android_client_info": {
           "package_name": "com.example.snapshots"
         }
       },
       "oauth_client": [
         {
-          "client_id": "813109373136-fh7ebn5n5ncmelv83v72fro41003m6bd.apps.googleusercontent.com",
+          "client_id": "813109373136-kbe9700mho0tv9v8ksmi1027qaulsfd9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.snapshots",
+            "certificate_hash": "f4157fecd5c79440f3f8ecb0a3c3bf9be78b9f3c"
+          }
+        },
+        {
+          "client_id": "813109373136-n92qm5qf8v5rg12algpe7g63u95afj0i.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -27,7 +36,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "813109373136-fh7ebn5n5ncmelv83v72fro41003m6bd.apps.googleusercontent.com",
+              "client_id": "813109373136-0pvjdfi17co8jsm15bggnknf462v8ha5.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
