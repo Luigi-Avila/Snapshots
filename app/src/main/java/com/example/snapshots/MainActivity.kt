@@ -1,6 +1,7 @@
 package com.example.snapshots
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -10,8 +11,6 @@ import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,8 +19,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mActiveFragment: Fragment
     private lateinit var mFragmentManager: FragmentManager
 
-    /*    private lateinit var mAuthListener: FirebaseAuth.AuthStateListener
-        private var mFirebaseAuth: FirebaseAuth? = null*/
+    private lateinit var mAuthListener: FirebaseAuth.AuthStateListener
+    private var mFirebaseAuth: FirebaseAuth? = null
+
+
 
     private val sigInLauncher = registerForActivityResult(
         FirebaseAuthUIActivityResultContract(),
@@ -40,32 +41,53 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupAuth() {
-        val user = Firebase.auth.currentUser
-        if (user == null) {
-            val providers = arrayListOf(
-                AuthUI.IdpConfig.EmailBuilder().build(),
-                AuthUI.IdpConfig.GoogleBuilder().build()
-            )
+        Log.i("USER", "Valor de user inicio setup ")
+        mFirebaseAuth = FirebaseAuth.getInstance()
+        mAuthListener = FirebaseAuth.AuthStateListener {
+            Toast.makeText(this, "Inicia sesion", Toast.LENGTH_SHORT).show()
+            val user = it.currentUser
+            Log.i("USER", "Valor de user inicio setup $user")
+            if ( user == null){
+                val providers = arrayListOf(
+                    AuthUI.IdpConfig.EmailBuilder().build(),
+                    AuthUI.IdpConfig.GoogleBuilder().build()
+                )
 
-            val sigInIntent = AuthUI.getInstance()
-                .createSignInIntentBuilder()
-                .setAvailableProviders(providers)
-                .build()
-            sigInLauncher.launch(sigInIntent)
-        } else {
-            Toast.makeText(this, "Usuario loggeado", Toast.LENGTH_LONG).show()
+                val sigInIntent = AuthUI.getInstance()
+                    .createSignInIntentBuilder()
+                    .setAvailableProviders(providers)
+                    .build()
+                sigInLauncher.launch(sigInIntent)
+            }
         }
 
-
-        /*mFirebaseAuth = FirebaseAuth.getInstance()
+        /*
         mAuthListener = FirebaseAuth.AuthStateListener {
             val user = it.currentUser
+            Log.i("USER", "Valor de user $user")
             if (user == null) {
+                val providers = arrayListOf(
+                    AuthUI.IdpConfig.EmailBuilder().build(),
+                    AuthUI.IdpConfig.GoogleBuilder().build()
+                )
 
+                val sigInIntent = AuthUI.getInstance()
+                    .createSignInIntentBuilder()
+                    .setAvailableProviders(providers)
+                    .build()
+                sigInLauncher.launch(sigInIntent)
             } else {
+                Toast.makeText(this, "Usuario loggeado", Toast.LENGTH_LONG).show()
             }
-        }*/
+        }
+        */
 
+
+    }
+
+    override fun onStart() {
+        super.onStart()
+        mFirebaseAuth?.addAuthStateListener(mAuthListener)
     }
 
     private fun onSignInResult(result: FirebaseAuthUIAuthenticationResult) {
@@ -144,6 +166,9 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
+    override fun onStop() {
+        super.onStop()
+        mFirebaseAuth?.removeAuthStateListener(mAuthListener)
+    }
 
 }
