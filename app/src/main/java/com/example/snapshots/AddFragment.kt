@@ -12,8 +12,10 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import com.example.snapshots.databinding.FragmentAddBinding
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 
@@ -71,8 +73,10 @@ class AddFragment : Fragment() {
 
     private fun postSnapshot() {
         mBinding.progressBar.visibility = View.VISIBLE
-        val key = mDatabaseReference.push().key
-        val storageReference = mStorageReference.child(PATH_SNAPSHOT).child("my_photo")
+        val key = mDatabaseReference.push().key!!
+        val storageReference = mStorageReference.child(PATH_SNAPSHOT)
+            .child(FirebaseAuth.getInstance().uid!!)
+            .child(key)
         storageReference.putFile(mPhotoSelectedUri)
             .addOnProgressListener {
                 val progress = (100 * it.bytesTransferred / it.totalByteCount).toDouble()
@@ -86,7 +90,7 @@ class AddFragment : Fragment() {
                 Snackbar
                     .make(mBinding.root, "Foto publicada", Snackbar.LENGTH_SHORT)
                     .show()
-                it.storage.downloadUrl.addOnSuccessListener {url ->
+                it.storage.downloadUrl.addOnSuccessListener { url ->
                     savePost(key!!, url.toString(), mBinding.etTitle.text.toString().trim())
                     mBinding.tilTitle.visibility = View.GONE
                     mBinding.tvMessage.text = getString(R.string.post_message_title)
