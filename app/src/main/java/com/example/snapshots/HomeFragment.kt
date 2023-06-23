@@ -26,7 +26,7 @@ class HomeFragment : Fragment(), HomeAux {
     private lateinit var mBinding: FragmentHomeBinding
 
     private lateinit var mFirebaseAdapter: FirebaseRecyclerAdapter<Snapshot, SnapshotHolder>
-    private lateinit var mLayoutManager : RecyclerView.LayoutManager
+    private lateinit var mLayoutManager: RecyclerView.LayoutManager
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,8 +47,8 @@ class HomeFragment : Fragment(), HomeAux {
             snapshot
         }).build()
 
-/*            FirebaseRecyclerOptions.Builder<Snapshot>()
-            .setQuery(query, Snapshot::class.java).build()*/
+        /*            FirebaseRecyclerOptions.Builder<Snapshot>()
+                    .setQuery(query, Snapshot::class.java).build()*/
 
         mFirebaseAdapter = object : FirebaseRecyclerAdapter<Snapshot, SnapshotHolder>(options) {
 
@@ -68,10 +68,22 @@ class HomeFragment : Fragment(), HomeAux {
                 with(holder) {
                     setListener(snapshot)
 
-                    binding.tvTitle.text = snapshot.title
-                    binding.cbLike.text = snapshot.likeList.keys.size.toString()
+                    binding.tvTitle.text = "${snapshot.author} ${snapshot.title}"
+                    /*binding.cbLike.text = snapshot.likeList.keys.size.toString()*/
+                    binding.tvUserName.text = snapshot.author
                     FirebaseAuth.getInstance().currentUser?.let {
                         binding.cbLike.isChecked = snapshot.likeList.containsKey(it.uid)
+                        binding.tvLikes.text = resources.getQuantityString(
+                            R.plurals.numberOfLikes,
+                            snapshot.likeList.keys.size,
+                            snapshot.likeList.keys.size
+                        )
+                        Glide.with(mContext)
+                            .load(it.photoUrl)
+                            .centerCrop()
+                            .circleCrop()
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .into(binding.imgUser)
                     }
                     Glide.with(mContext)
                         .load(snapshot.photoUrl)
@@ -114,14 +126,14 @@ class HomeFragment : Fragment(), HomeAux {
         mFirebaseAdapter.stopListening()
     }
 
-    private fun deleteSnapshot(snapshot: Snapshot){
+    private fun deleteSnapshot(snapshot: Snapshot) {
         val databaseReference = FirebaseDatabase.getInstance().reference.child("snapshots")
         databaseReference.child(snapshot.id).removeValue()
     }
 
-    private fun setLike(snapshot: Snapshot, checked: Boolean){
+    private fun setLike(snapshot: Snapshot, checked: Boolean) {
         val databaseReference = FirebaseDatabase.getInstance().reference.child("snapshots")
-        if (checked){
+        if (checked) {
             databaseReference.child(snapshot.id).child("likeList")
                 .child(FirebaseAuth.getInstance().currentUser!!.uid).setValue(checked)
         } else {

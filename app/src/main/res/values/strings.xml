@@ -7,4 +7,12 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="post_message_title">Seleccione una imagen</string>
     <string name="post_message_valid_title">Por favor, agrega un titulo</string>
+
+    <string name="description_number_likes">Les gusta esta publicacion</string>
+
+    <plurals name="numberOfLikes">
+        <item quantity="one">A %d persona le gusta esta publicacion</item>
+        <item quantity="other">A %d personas les gusta esta publicacion</item>
+    </plurals>
+
 </resources>

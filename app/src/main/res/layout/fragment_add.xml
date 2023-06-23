@@ -23,6 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/common_padding_min"
         android:text="Publicar"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/progressBar" />
 

@@ -7,6 +7,7 @@ import com.google.firebase.database.IgnoreExtraProperties
 data class Snapshot(
     @get:Exclude var id : String = "",
     var title: String = "",
+    val author: String = "",
     var photoUrl: String = "",
     var likeList: Map<String, Boolean> = mutableMapOf()
 )
