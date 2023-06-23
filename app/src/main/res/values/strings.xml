@@ -9,6 +9,9 @@
     <string name="post_message_valid_title">Por favor, agrega un titulo</string>
 
     <string name="description_number_likes">Les gusta esta publicacion</string>
+    <string name="description_post">Publicar</string>
+    <string name="hint_title_photo">Titulo de la instantanea</string>
+    <string name="action_logout">Cerrar sesion</string>
 
     <plurals name="numberOfLikes">
         <item quantity="one">A %d persona le gusta esta publicacion</item>
