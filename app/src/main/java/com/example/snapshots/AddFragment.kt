@@ -109,7 +109,8 @@ class AddFragment : Fragment() {
                             key,
                             url.toString(),
                             mBinding.etTitle.text.toString().trim(),
-                            user.displayName.toString()
+                            user.displayName.toString(),
+                            user.uid
                         )
                         mBinding.tilTitle.visibility = View.GONE
                         mBinding.tvMessage.text = getString(R.string.post_message_title)
@@ -130,8 +131,8 @@ class AddFragment : Fragment() {
             }
     }
 
-    private fun savePost(key: String, url: String, title: String, author: String) {
-        val snapshot = Snapshot(title = title, photoUrl = url, author = author)
+    private fun savePost(key: String, url: String, title: String, author: String, ownerUid: String) {
+        val snapshot = Snapshot(title = title, photoUrl = url, author = author, ownerUid = ownerUid)
         mDatabaseReference.child(key).setValue(snapshot)
     }
 

@@ -81,13 +81,15 @@ class HomeFragment : Fragment(), HomeAux {
                     binding.tvUserName.text = snapshot.author
                     FirebaseAuth.getInstance().currentUser?.let {
                         binding.cbLike.isChecked = snapshot.likeList.containsKey(it.uid)
-                        binding.tvLikes.text = resources.getQuantityString(
-                            R.plurals.numberOfLikes,
-                            snapshot.likeList.keys.size,
-                            snapshot.likeList.keys.size
-                        )
+                        binding.btnDelete.visibility =
+                            if (snapshot.ownerUid === it.uid) View.VISIBLE else View.INVISIBLE
                         loadImageGlide(it.photoUrl.toString(), binding.imgUser)
                     }
+                    binding.tvLikes.text = resources.getQuantityString(
+                        R.plurals.numberOfLikes,
+                        snapshot.likeList.keys.size,
+                        snapshot.likeList.keys.size
+                    )
                     loadImageGlide(snapshot.photoUrl, binding.imgPhoto)
 
                 }
