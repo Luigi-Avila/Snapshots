@@ -1,6 +1,5 @@
 package com.example.snapshots
 
-import android.net.wifi.hotspot2.pps.HomeSp
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -95,7 +94,9 @@ class MainActivity : AppCompatActivity() {
         val response = result.idpResponse
         if (result.resultCode == RESULT_OK) {
             // Successfully signed in
+/*
             val user = FirebaseAuth.getInstance().currentUser
+*/
             Toast.makeText(this, "Bienvenido...", Toast.LENGTH_LONG).show()
             // ...
         } else {

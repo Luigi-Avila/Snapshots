@@ -12,10 +12,13 @@
     <string name="description_post">Publicar</string>
     <string name="hint_title_photo">Titulo de la instantanea</string>
     <string name="action_logout">Cerrar sesion</string>
+    <string name="delete_photo_error">Algo salio mal al eliminar la foto</string>
 
     <plurals name="numberOfLikes">
         <item quantity="one">A %d persona le gusta esta publicacion</item>
         <item quantity="other">A %d personas les gusta esta publicacion</item>
     </plurals>
+
+    <string name="number_percent_upload">%d %</string>
 
 </resources>

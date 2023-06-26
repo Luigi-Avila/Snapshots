@@ -17,7 +17,7 @@ class ProfileFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         mBinding = FragmentProfileBinding.inflate(inflater, container, false)
         return mBinding.root
     }

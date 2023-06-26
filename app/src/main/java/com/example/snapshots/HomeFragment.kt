@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,10 +17,12 @@ import com.example.snapshots.databinding.FragmentHomeBinding
 import com.example.snapshots.databinding.ItemSnapshotBinding
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
-import com.firebase.ui.database.SnapshotParser
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
 
 class HomeFragment : Fragment(), HomeAux {
 
@@ -27,11 +30,12 @@ class HomeFragment : Fragment(), HomeAux {
 
     private lateinit var mFirebaseAdapter: FirebaseRecyclerAdapter<Snapshot, SnapshotHolder>
     private lateinit var mLayoutManager: RecyclerView.LayoutManager
+    private lateinit var mContext: Context
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         mBinding = FragmentHomeBinding.inflate(inflater, container, false)
         return mBinding.root
     }
@@ -39,20 +43,24 @@ class HomeFragment : Fragment(), HomeAux {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupFirebaseRecyclerView()
+
+    }
+
+    private fun setupFirebaseRecyclerView() {
         val query = FirebaseDatabase.getInstance().reference.child("snapshots")
 
-        val options = FirebaseRecyclerOptions.Builder<Snapshot>().setQuery(query, SnapshotParser {
+        val options = FirebaseRecyclerOptions.Builder<Snapshot>().setQuery(query) {
             val snapshot = it.getValue(Snapshot::class.java)
             snapshot!!.id = it.key!!
             snapshot
-        }).build()
+        }.build()
 
         /*            FirebaseRecyclerOptions.Builder<Snapshot>()
                     .setQuery(query, Snapshot::class.java).build()*/
 
         mFirebaseAdapter = object : FirebaseRecyclerAdapter<Snapshot, SnapshotHolder>(options) {
 
-            private lateinit var mContext: Context
 
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SnapshotHolder {
                 mContext = parent.context
@@ -78,18 +86,10 @@ class HomeFragment : Fragment(), HomeAux {
                             snapshot.likeList.keys.size,
                             snapshot.likeList.keys.size
                         )
-                        Glide.with(mContext)
-                            .load(it.photoUrl)
-                            .centerCrop()
-                            .circleCrop()
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(binding.imgUser)
+                        loadImageGlide(it.photoUrl.toString(), binding.imgUser)
                     }
-                    Glide.with(mContext)
-                        .load(snapshot.photoUrl)
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .centerCrop()
-                        .into(binding.imgPhoto)
+                    loadImageGlide(snapshot.photoUrl, binding.imgPhoto)
+
                 }
             }
 
@@ -116,6 +116,15 @@ class HomeFragment : Fragment(), HomeAux {
         }
     }
 
+    private fun loadImageGlide(photoUrl: String, imageElement: ImageView) {
+        Glide.with(mContext)
+            .load(photoUrl)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .centerCrop()
+            .into(imageElement)
+    }
+
+
     override fun onStart() {
         super.onStart()
         mFirebaseAdapter.startListening()
@@ -127,15 +136,39 @@ class HomeFragment : Fragment(), HomeAux {
     }
 
     private fun deleteSnapshot(snapshot: Snapshot) {
-        val databaseReference = FirebaseDatabase.getInstance().reference.child("snapshots")
-        databaseReference.child(snapshot.id).removeValue()
+        context?.let {
+            MaterialAlertDialogBuilder(it).setTitle("Estas seguro que quieres eliminar esta foto?")
+                .setPositiveButton("Eliminar") { _, _ ->
+
+                    val storageSnapshotsRef = FirebaseStorage.getInstance().reference
+                        .child("snapshots")
+                        .child(FirebaseAuth.getInstance().currentUser!!.uid)
+                        .child(snapshot.id)
+
+                    storageSnapshotsRef.delete().addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val databaseReference =
+                                FirebaseDatabase.getInstance().reference.child("snapshots")
+                            databaseReference.child(snapshot.id).removeValue()
+                        } else {
+                            Snackbar.make(
+                                mBinding.root,
+                                R.string.delete_photo_error,
+                                Snackbar.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }.setNegativeButton("Cancelar", null).show()
+        }
+
+
     }
 
     private fun setLike(snapshot: Snapshot, checked: Boolean) {
         val databaseReference = FirebaseDatabase.getInstance().reference.child("snapshots")
         if (checked) {
             databaseReference.child(snapshot.id).child("likeList")
-                .child(FirebaseAuth.getInstance().currentUser!!.uid).setValue(checked)
+                .child(FirebaseAuth.getInstance().currentUser!!.uid).setValue(true)
         } else {
             databaseReference.child(snapshot.id).child("likeList")
                 .child(FirebaseAuth.getInstance().currentUser!!.uid).setValue(null)
@@ -147,7 +180,7 @@ class HomeFragment : Fragment(), HomeAux {
 
         fun setListener(snapshot: Snapshot) {
             binding.btnDelete.setOnClickListener { deleteSnapshot(snapshot) }
-            binding.cbLike.setOnCheckedChangeListener { compoundButton, checked ->
+            binding.cbLike.setOnCheckedChangeListener { _, checked ->
                 setLike(snapshot, checked)
             }
         }

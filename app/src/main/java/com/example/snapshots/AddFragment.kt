@@ -9,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -35,7 +34,7 @@ class AddFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         mBinding = FragmentAddBinding.inflate(inflater)
         return mBinding.root
     }
@@ -94,7 +93,7 @@ class AddFragment : Fragment() {
             .addOnProgressListener {
                 val progress = (100 * it.bytesTransferred / it.totalByteCount).toDouble()
                 mBinding.progressBar.progress = progress.toInt()
-                mBinding.tvMessage.text = "$progress %"
+                mBinding.tvMessage.text = "$progress%"
             }
             .addOnCompleteListener {
                 mBinding.progressBar.visibility = View.INVISIBLE
@@ -137,7 +136,11 @@ class AddFragment : Fragment() {
     }
 
     private fun hideKeyboard() {
-        val inputMethodManager =
+
+        val inputMethodManager = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(requireView().windowToken, 0)
+
+        /*val inputMethodManager =
             requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         val currentFocusedView = requireActivity().currentFocus
         Toast.makeText(context, "hide keyboard", Toast.LENGTH_LONG).show()
@@ -152,7 +155,7 @@ class AddFragment : Fragment() {
                     view.windowToken, InputMethodManager.HIDE_NOT_ALWAYS
                 )
             }
-        }
+        }*/
     }
 
 }
